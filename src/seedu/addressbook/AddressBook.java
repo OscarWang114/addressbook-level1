@@ -109,7 +109,7 @@ public class AddressBook {
     private static final String COMMAND_LIST_EXAMPLE = COMMAND_LIST_WORD;
 
     private static final String COMMAND_UPDATE_WORD = "update";
-    private static final String COMMAND_UPDATE_DESC = "Deletes a person identified by the index number used in "
+    private static final String COMMAND_UPDATE_DESC = "Updates a person identified by the index number used in "
                                                     + "the last find/list call.";
     private static final String COMMAND_UPDATE_PARAMETER = "INDEX "
                                                         + PERSON_DATA_PREFIX_PHONE + "PHONE_NUMBER "
