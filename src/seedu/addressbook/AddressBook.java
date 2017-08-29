@@ -111,10 +111,10 @@ public class AddressBook {
     private static final String COMMAND_UPDATE_WORD = "update";
     private static final String COMMAND_UPDATE_DESC = "Updates a person identified by the index number used in "
                                                     + "the last find/list call.";
-    private static final String COMMAND_UPDATE_PARAMETER = "INDEX "
+    private static final String COMMAND_UPDATE_PARAMETER = "INDEX " + "NAME "
                                                         + PERSON_DATA_PREFIX_PHONE + "PHONE_NUMBER "
                                                         + PERSON_DATA_PREFIX_EMAIL + "EMAIL";
-    private static final String COMMAND_UPDATE_EXAMPLE = COMMAND_UPDATE_WORD + " 1 p/1234578 e/johnd@yahoo.com";
+    private static final String COMMAND_UPDATE_EXAMPLE = COMMAND_UPDATE_WORD + " 1 John Roe p/1234578 e/johnd@yahoo.com";
 
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
@@ -496,13 +496,19 @@ public class AddressBook {
     }
 
     private static String executeUpdatePerson(String commandArgs) {
-        /*
-        if(!isUpdatePersonArgsValid(commandArgs)) {
 
+        if(!isUpdatePersonArgsValid(commandArgs)) {
+            return getMessageForInvalidCommandInput(COMMAND_UPDATE_WORD, getUsageInfoForUpdateCommand());
         }
-        return "test";
-        */
-        return getMessageForInvalidCommandInput(COMMAND_UPDATE_WORD, getUsageInfoForUpdateCommand());
+        final int targetVisibleIndex = extractTargetIndexFromUpdatePersonArgs(commandArgs);
+        if (!isDisplayIndexValidForLastPersonListingView(targetVisibleIndex)) {
+            return MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
+        }
+        final HashMap<PersonProperty, String> targetInModel = getPersonByLastVisibleIndex(targetVisibleIndex);
+        return "success";
+
+                //updatePersonInAddressBook(targetInModel) ? getMessageForSuccessfulDelete(targetInModel) // success
+                //: MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
     }
 
     /**
@@ -518,6 +524,16 @@ public class AddressBook {
         } catch (NumberFormatException nfe) {
             return false;
         }
+    }
+
+    /**
+     * Extracts the target's index from the raw update person args string
+     *
+     * @param rawArgs raw command args string for the update person command
+     * @return extracted index
+     */
+    private static int extractTargetIndexFromUpdatePersonArgs(String rawArgs) {
+        return Integer.parseInt(rawArgs.trim());
     }
 
     /**

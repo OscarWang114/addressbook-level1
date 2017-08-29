@@ -63,8 +63,8 @@
 || 	Example: list
 || 
 || update: Updates a person identified by the index number used in the last find/list call.
-|| 	Parameters: INDEX p/PHONE_NUMBER e/EMAIL
-|| 	Example: update 1 p/1234578 e/johnd@yahoo.com
+|| 	Parameters: INDEX NAME p/PHONE_NUMBER e/EMAIL
+|| 	Example: update 1 John Roe p/1234578 e/johnd@yahoo.com
 || 
 || delete: Deletes a person identified by the index number used in the last find/list call.
 || 	Parameters: INDEX
