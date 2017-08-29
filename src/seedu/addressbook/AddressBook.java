@@ -34,6 +34,7 @@ public class AddressBook {
      */
     private static final String DEFAULT_STORAGE_FILEPATH = "addressbook.txt";
 
+
     /**
      * Version info of the program.
      */
@@ -496,28 +497,59 @@ public class AddressBook {
     }
 
     private static String executeUpdatePerson(String commandArgs) {
+        //TODO: add method to check if commandArgs are valid
+        final String[] indexAndPersonData = splitIndexAndPersonData(commandArgs);
+        final String indexArg = indexAndPersonData[0];
+        final String personDataArgs = indexAndPersonData[1];
 
-        if(!isUpdatePersonArgsValid(commandArgs)) {
+        if(!isUpdatePersonIndexValid(indexArg)) {
             return getMessageForInvalidCommandInput(COMMAND_UPDATE_WORD, getUsageInfoForUpdateCommand());
         }
-        final int targetVisibleIndex = extractTargetIndexFromUpdatePersonArgs(commandArgs);
+
+        final int targetVisibleIndex = Integer.parseInt(indexArg);
+
         if (!isDisplayIndexValidForLastPersonListingView(targetVisibleIndex)) {
             return MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
         }
-        final HashMap<PersonProperty, String> targetInModel = getPersonByLastVisibleIndex(targetVisibleIndex);
-        return "success";
 
-                //updatePersonInAddressBook(targetInModel) ? getMessageForSuccessfulDelete(targetInModel) // success
-                //: MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
+        final HashMap<PersonProperty, String> updatedPerson =makePersonFromData(
+                extractNameFromPersonString(personDataArgs),
+                extractPhoneFromPersonString(personDataArgs),
+                extractEmailFromPersonString(personDataArgs)
+        );
+
+        //TODO: improve name.
+        final int targetListIndex = targetVisibleIndex - DISPLAYED_INDEX_OFFSET;
+
+        final HashMap<PersonProperty, String> previousPerson = updatePersonInAddressBook(
+                targetListIndex,
+                updatedPerson
+        );
+
+        return encodePersonToString(previousPerson);
+
+        //TODO: Check person not found, implement method that compare person details individually.
+        //updatePersonInAddressBook(targetInModel) ? getMessageForSuccessfulDelete(targetInModel) // success
+        //: MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
     }
 
+    /**
+     * Splits raw update command argument into index and person data string
+     *
+     * @return  size 2 array; first element is the index and second element is the person data string
+     */
+    private static String[] splitIndexAndPersonData(String rawArgs){
+        final String[] split = rawArgs.split("\\s+", 2);
+        return split.length == 2 ? split : new String[] { split[0] , "" }; // else case: no parameters
+    }
+    //TODO: Improve documentation below.
     /**
      * Checks validity of update person argument string's format.
      *
      * @param rawArgs raw command args string for the update person command
      * @return whether the input args string is valid
      */
-    private static boolean isUpdatePersonArgsValid(String rawArgs) {
+    private static boolean isUpdatePersonIndexValid(String rawArgs) {
         try {
             final int extractedIndex = Integer.parseInt(rawArgs.trim()); // use standard libraries to parse
             return extractedIndex >= DISPLAYED_INDEX_OFFSET;
@@ -526,15 +558,13 @@ public class AddressBook {
         }
     }
 
-    /**
-     * Extracts the target's index from the raw update person args string
-     *
-     * @param rawArgs raw command args string for the update person command
-     * @return extracted index
-     */
-    private static int extractTargetIndexFromUpdatePersonArgs(String rawArgs) {
-        return Integer.parseInt(rawArgs.trim());
+    //TODO: Improve documentation below.
+    private static HashMap<PersonProperty, String> updatePersonInAddressBook(int index, HashMap<PersonProperty, String> updatedPerson) {
+        final HashMap<PersonProperty, String> previousPerson = ALL_PERSONS.set(index, updatedPerson);
+        return previousPerson;
     }
+
+
 
     /**
      * Deletes person identified using last displayed index.
