@@ -64,7 +64,7 @@
 || 
 || update: Updates a person identified by the index number used in the last find/list call.
 || 	Parameters: INDEX NAME p/PHONE_NUMBER e/EMAIL
-|| 	Example: update 1 John Roe p/1234578 e/johnd@yahoo.com
+|| 	Example: update 1 John New p/12345678 e/johnew@yahoo.com
 || 
 || delete: Deletes a person identified by the index number used in the last find/list call.
 || 	Parameters: INDEX
@@ -207,6 +207,20 @@
 || 	2. Charlie Dickson  Phone Number: 333333  Email: charlie.d@nus.edu.sg
 || 
 || 2 persons found!
+|| ===================================================
+|| Enter command: || [Command entered:  update]
+|| Invalid command format: update 
+|| update: Updates a person identified by the index number used in the last find/list call.
+|| 	Parameters: INDEX NAME p/PHONE_NUMBER e/EMAIL
+|| 	Example: update 1 John New p/12345678 e/johnew@yahoo.com
+|| 
+|| ===================================================
+|| Enter command: || [Command entered:  update wrong args wrong args]
+|| Invalid command format: update 
+|| update: Updates a person identified by the index number used in the last find/list call.
+|| 	Parameters: INDEX NAME p/PHONE_NUMBER e/EMAIL
+|| 	Example: update 1 John New p/12345678 e/johnew@yahoo.com
+|| 
 || ===================================================
 || Enter command: || [Command entered:  delete]
 || Invalid command format: delete 

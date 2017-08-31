@@ -88,10 +88,12 @@ public class AddressBook {
     private static final String MESSAGE_ERROR_MISSING_STORAGE_FILE = "Storage file missing: %1$s";
     private static final String MESSAGE_ERROR_READING_FROM_FILE = "Unexpected error: unable to read from file: %1$s";
     private static final String MESSAGE_ERROR_WRITING_TO_FILE = "Unexpected error: unable to write to file: %1$s";
+    private static final String MESSAGE_ERROR_UPDATING_PERSON = "Cannot update person";
     private static final String MESSAGE_PERSONS_FOUND_OVERVIEW = "%1$d persons found!";
     private static final String MESSAGE_STORAGE_FILE_CREATED = "Created new empty storage file: %1$s";
     private static final String MESSAGE_WELCOME = "Welcome to your Address Book!";
     private static final String MESSAGE_USING_DEFAULT_FILE = "Using default storage file : " + DEFAULT_STORAGE_FILEPATH;
+    private static final String MESSAGE_UPDATE_PERSON_SUCCESS = "Updated Person: %1$s";
 
     // These are the prefix strings to define the data type of a command parameter
     private static final String PERSON_DATA_PREFIX_PHONE = "p/";
@@ -123,7 +125,7 @@ public class AddressBook {
     private static final String COMMAND_UPDATE_PARAMETER = "INDEX " + "NAME "
                                                         + PERSON_DATA_PREFIX_PHONE + "PHONE_NUMBER "
                                                         + PERSON_DATA_PREFIX_EMAIL + "EMAIL";
-    private static final String COMMAND_UPDATE_EXAMPLE = COMMAND_UPDATE_WORD + " 1 John Roe p/1234578 e/johnd@yahoo.com";
+    private static final String COMMAND_UPDATE_EXAMPLE = COMMAND_UPDATE_WORD + " 1 John New p/12345678 e/johnew@yahoo.com";
 
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
@@ -504,8 +506,9 @@ public class AddressBook {
         return matchedPersons;
     }
 
+
     private static String executeUpdatePerson(String commandArgs) {
-        //TODO: add method to check if commandArgs are valid
+        //TODO: Implement method that compare person details individually
         final String[] indexAndPersonData = splitIndexAndPersonData(commandArgs);
         final String indexArg = indexAndPersonData[0];
         final String personDataArgs = indexAndPersonData[1];
@@ -526,19 +529,11 @@ public class AddressBook {
                 extractEmailFromPersonString(personDataArgs)
         );
 
-        //TODO: improve name.
+        //TODO: Improve naming
         final int targetListIndex = targetVisibleIndex - DISPLAYED_INDEX_OFFSET;
 
-        final HashMap<PersonProperty, String> previousPerson = updatePersonInAddressBook(
-                targetListIndex,
-                updatedPerson
-        );
-
-        return encodePersonToString(previousPerson);
-
-        //TODO: Check person not found, implement method that compare person details individually.
-        //updatePersonInAddressBook(targetInModel) ? getMessageForSuccessfulDelete(targetInModel) // success
-        //: MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
+        return updatePersonInAddressBook(targetListIndex, updatedPerson) ? getMessageForSuccessfulUpdate(updatedPerson)
+                                                                         : MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
     }
 
     /**
@@ -550,11 +545,11 @@ public class AddressBook {
         final String[] split = rawArgs.split("\\s+", 2);
         return split.length == 2 ? split : new String[] { split[0] , "" }; // else case: no parameters
     }
-    //TODO: Improve documentation below.
+
     /**
-     * Checks validity of update person argument string's format.
+     * Checks validity of index of update person argument string's format.
      *
-     * @param rawArgs raw command args string for the update person command
+     * @param rawArgs raw args string for the index of update person
      * @return whether the input args string is valid
      */
     private static boolean isUpdatePersonIndexValid(String rawArgs) {
@@ -567,11 +562,26 @@ public class AddressBook {
     }
 
     //TODO: Improve documentation below.
-    private static HashMap<PersonProperty, String> updatePersonInAddressBook(int index, HashMap<PersonProperty, String> updatedPerson) {
-        final HashMap<PersonProperty, String> previousPerson = ALL_PERSONS.set(index, updatedPerson);
-        return previousPerson;
+    private static boolean updatePersonInAddressBook(int index, HashMap<PersonProperty, String> updatedPerson) {
+        try {
+            ALL_PERSONS.set(index, updatedPerson);
+            savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
+        } catch (ArrayIndexOutOfBoundsException aiooe) {
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * Constructs a feedback message for a successful update person command execution.
+     *
+     * @see #executeDeletePerson(String)
+     * @param updatedPerson successfully updated
+     * @return successful update person feedback message
+     */
+    private static String getMessageForSuccessfulUpdate(HashMap<PersonProperty, String> updatedPerson) {
+        return String.format(MESSAGE_UPDATE_PERSON_SUCCESS, getMessageForFormattedPersonData(updatedPerson));
+    }
 
 
     /**

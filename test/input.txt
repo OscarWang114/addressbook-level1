@@ -62,6 +62,18 @@
   find Charlie Betsy
 
 ##########################################################
+# test update person command
+##########################################################
+
+  # should catch invalid args format
+  update
+  update wrong args wrong args
+
+  # updates correct person
+
+  #To be completed.
+
+##########################################################
 # test delete person command
 ##########################################################
 
